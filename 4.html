@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>កម្រងសំណួរនិងលំហាត់វាស់ស្ទង់សមត្ថភាព</title>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;700&family=Moul&display=swap');
+        
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #1e293b;
+        }
+        .exam-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px double #1e3a8a;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .kingdom {
+            font-family: 'Moul', sans-serif;
+            font-size: 16px;
+            margin: 0 0 5px 0;
+            color: #1e3a8a;
+        }
+        .exam-title {
+            font-family: 'Moul', sans-serif;
+            font-size: 18px;
+            color: #b91c1c;
+            margin: 20px 0 5px 0;
+            line-height: 1.6;
+        }
+        .author {
+            font-size: 14px;
+            font-weight: bold;
+            color: #334155;
+            margin-top: 5px;
+        }
+        .student-info-box {
+            background-color: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #334155;
+        }
+        .input-group input {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-size: 14px;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #1e3a8a;
+        }
+        .sticky-bar {
+            position: sticky;
+            top: 10px;
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            z-index: 1000;
+            border-left: 6px solid #1e3a8a;
+        }
+        .question-card {
+            display: none;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        .question-card.active {
+            display: block;
+        }
+        .question-card:hover {
+            border-color: #1e3a8a;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.05);
+        }
+        .question-text {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 18px;
+            color: #0f172a;
+            line-height: 1.8;
+        }
+        .points {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: normal;
+        }
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 10px;
+        }
+        @media (max-width: 650px) {
+            .options-container { grid-template-columns: 1fr; }
+            .student-info-box { grid-template-columns: 1fr; }
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 15px;
+        }
+        .option-label:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+        .option-label input {
+            margin-right: 12px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        .solution-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            border-radius: 6px;
+            font-size: 14.5px;
+            line-height: 1.7;
+            color: #1e293b;
+        }
+        .solution-title {
+            font-weight: bold;
+            color: #16a34a;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .navigation-box {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 15px;
+        }
+        .nav-btn {
+            padding: 12px 25px;
+            background: #64748b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .nav-btn:hover {
+            background: #475569;
+        }
+        .nav-btn.next-btn {
+            background: #2563eb;
+        }
+        .nav-btn.next-btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .submit-btn {
+            display: none;
+            width: 100%;
+            padding: 16px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Kantumruy Pro', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(30, 58, 138, 0.15);
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+        .result-box {
+            display: none;
+            background: #eff6ff;
+            border: 2px solid #2563eb;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .result-title {
+            font-family: 'Moul', sans-serif;
+            color: #1e3a8a;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .grade-badge {
+            display: inline-block;
+            font-size: 36px;
+            font-weight: bold;
+            padding: 5px 30px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-family: sans-serif;
+        }
+        .grade-A { background-color: #d1fae5; color: #065f46; border: 2px solid #34d399; }
+        .grade-B { background-color: #e0f2fe; color: #075985; border: 2px solid #38bdf8; }
+        .grade-C { background-color: #fef9c3; color: #854d0e; border: 2px solid #facc15; }
+        .grade-D { background-color: #ffedd5; color: #9a3412; border: 2px solid #fb923c; }
+        .grade-E { background-color: #f3e8ff; color: #6b21a8; border: 2px solid #c084fc; }
+        .grade-F { background-color: #fee2e2; color: #991b1b; border: 2px solid #f87171; }
+
+        .correct-flash { background: #d1fae5 !important; border-color: #10b981 !important; }
+        .incorrect-flash { background: #fee2e2 !important; border-color: #ef4444 !important; }
+    </style>
+<a href="index.html" style="padding: 8px 16px; background: #e2e8f0; color: #333; text-decoration: none; border-radius: 5px; font-family: sans-serif;">
+    ⬅ ថយក្រោយ
+</a>
+</head>
+<body>
+
+    <div class="exam-container">
+        <div class="header">
+            <div class="kingdom">ព្រះរាជាណាចក្រកម្ពុជា</div>
+            <div class="kingdom" style="font-size: 13px;">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+<div class="exam-title">វិញ្ញាសាវាស់ស្ទង់សមត្ថភាពសិស្ស ( <span id="lesson-id"></span> )</div>
+
+            <div class="author">រៀបរៀង និងផ្ទៀងផ្ទាត់ដោយ៖ លោកគ្រូ រស់ មករា</div>
+        </div>
+
+        <div class="student-info-box" id="infoBox">
+            <div class="input-group">
+                <label for="studentName">នាមត្រកូល និងនាមខ្លួនបេក្ខជន *</label>
+                <input type="text" id="studentName" placeholder="តើអ្នកឈ្មោះអ្វី?" required>
+            </div>
+            <div class="input-group">
+                <label for="studentClass">ថ្នាក់/បន្ទប់សិក្សា *</label>
+                <input type="text" id="studentClass" placeholder="តើអ្នករៀនថ្នាក់ណា?" required>
+            </div>
+        </div>
+
+        <div class="sticky-bar">
+            <div style="font-weight: bold; color: #1e3a8a;" id="progressDisplay">លំហាត់ទី ១/--</div>
+            <div style="font-weight: bold; color: #1e3a8a;">ពិន្ទុរួម៖ <span id="totalPointsDisplay">0</span></div>
+        </div>
+
+        <div class="result-box" id="resultBox">
+            <div class="result-title">លទ្ធផលប្រឡង</div>
+
+            <p id="studentResultName" style="font-weight: bold; font-size: 16px; margin-bottom: 5px;"></p>
+<p style="font-size: 16px; color: #475569; font-weight: bold; margin: 5px 0 15px 0;">
+                ⏱️ ចំណាយពេល៖ <span id="timeSpentDisplay" style="color: #b91c1c;"></span>
+            </p>
+            <p style="font-size: 24px; color: #1e293b; font-weight: bold; margin: 10px 0 5px 0;">ពិន្ទុទទួលបាន៖ <span id="scoreDisplay">0</span> / <span id="maxPointsDisplay">0</span> (<span id="percentDisplay">0</span>%)</p>
+            
+            
+
+            <div><span id="gradeDisplay" class="grade-badge">F</span></div>
+            <p id="gradeComment" style="font-weight: bold; color: #475569; font-size: 15px; margin-bottom: 15px;"></p>
+            
+            <p style="color: #16a34a; font-weight: bold; margin-top: 12px; border-top: 1px dashed #cbd5e1; padding-top: 15px;">👇 សូមពិនិត្យវិធីសាស្ត្រដោះស្រាយលម្អិតនៅខាងក្រោមសំនួរនីមួយៗ!</p>
+        </div>
+
+        <form id="quizForm" onsubmit="submitExam(event)">                    
+            <div id="questionsContainer">                
+                
+<div class="question-card" data-qindex="1">
+    <div class="question-text">
+        <span class="q-number"></span> តើអនុគមន៍ $f(x) = \sin x$ និង $g(x) = \cos x$ មានដែនកំណត់ស្មើនឹងប៉ុន្មាន? (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q1" value="W1"> $D = \mathbb{R} \setminus \{\frac{\pi}{2} + k\pi\}$</label>
+        <label class="option-label"><input type="radio" name="q1" value="C" data-correct="true"> $D = \mathbb{R}$</label>
+        <label class="option-label"><input type="radio" name="q1" value="W2"> $D = \mathbb{R} \setminus \{k\pi\}$</label>
+        <label class="option-label"><input type="radio" name="q1" value="W3"> $D = [-1, 1]$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        អនុគមន៍ស៊ីនូស ($\sin x$) និងកូស៊ីនូស ($\cos x$) មានន័យជានិច្ចចំពោះគ្រប់តម្លៃចំនួនពិត $x$។ ដូចនេះដែនកំណត់របស់វាគឺ $D = \mathbb{R}$។ (ចំណាំ៖ $[-1, 1]$ គឺជាសំណុំតម្លៃរបស់អនុគមន៍ មិនមែនជាដែនកំណត់ទេ)។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="2">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \tan x$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q2" value="W1"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q2" value="W2"> $x \neq \frac{\pi}{2} + 2k\pi$</label>
+        <label class="option-label"><input type="radio" name="q2" value="C" data-correct="true"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q2" value="W3"> $x > 0$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        តាមនិយមន័យ $\tan x = \frac{\sin x}{\cos x}$។ អនុគមន៍នេះមានន័យលុះត្រាតែភាគបែងខុសពីសូន្យ គឺ $\cos x \neq 0 \Rightarrow x \neq \frac{\pi}{2} + k\pi$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="3">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \cot x$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q3" value="C" data-correct="true"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q3" value="W1"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q3" value="W2"> $x \neq 2k\pi$</label>
+        <label class="option-label"><input type="radio" name="q3" value="W3"> គ្រប់ $x \in \mathbb{R}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        តាមនិយមន័យ $\cot x = \frac{\cos x}{\sin x}$។ អនុគមន៍នេះមានន័យលុះត្រាតែភាគបែងខុសពីសូន្យ គឺ $\sin x \neq 0 \Rightarrow x \neq k\pi$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="4">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \tan(2x)$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q4" value="W1"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q4" value="C" data-correct="true"> $x \neq \frac{\pi}{4} + \frac{k\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q4" value="W2"> $x \neq \frac{\pi}{4} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q4" value="W3"> $x \neq \frac{k\pi}{2}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        អនុគមន៍មានន័យកាលណា៖ $2x \neq \frac{\pi}{2} + k\pi$។ ចែកអង្គទាំងពីរនឹង $2$ គេទាញបាន៖ $x \neq \frac{\pi}{4} + \frac{k\pi}{2}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="5">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \cot(3x)$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q5" value="W1"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q5" value="W2"> $x \neq \frac{\pi}{6} + \frac{k\pi}{3}$</label>
+        <label class="option-label"><input type="radio" name="q5" value="W3"> $x \neq 3k\pi$</label>
+        <label class="option-label"><input type="radio" name="q5" value="C" data-correct="true"> $x \neq \frac{k\pi}{3}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        អនុគមន៍កូតង់សង់មានន័យកាលណាមុំខុសពី $k\pi$។ គេបាន៖ $3x \neq k\pi \Rightarrow x \neq \frac{k\pi}{3}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="6">
+    <div class="question-text">
+        <span class="q-number"></span> រកដែនកំណត់នៃអនុគមន៍ $f(x) = \tan\left(x - \frac{\pi}{4}\right)$។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q6" value="W1"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q6" value="C" data-correct="true"> $x \neq \frac{3\pi}{4} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q6" value="W2"> $x \neq \frac{\pi}{4} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q6" value="W3"> $x \neq k\pi$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ $x - \frac{\pi}{4} \neq \frac{\pi}{2} + k\pi \Rightarrow x \neq \frac{\pi}{2} + \frac{\pi}{4} + k\pi \Rightarrow x \neq \frac{3\pi}{4} + k\pi$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="7">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \cot\left(x + \frac{\pi}{3}\right)$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q7" value="W1"> $x \neq \frac{\pi}{3} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q7" value="C" data-correct="true"> $x \neq -\frac{\pi}{3} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q7" value="W2"> $x \neq \frac{\pi}{6} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q7" value="W3"> $x \neq k\pi$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ $x + \frac{\pi}{3} \neq k\pi \Rightarrow x \neq -\frac{\pi}{3} + k\pi$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="8">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{1}{\sin x}$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q8" value="W1"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q8" value="W2"> $x \neq 2k\pi$</label>
+        <label class="option-label"><input type="radio" name="q8" value="C" data-correct="true"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q8" value="W3"> មានន័យជានិច្ច</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        អនុគមន៍មានទម្រង់ប្រភាគ នាំឱ្យភាគបែងខុសពីសូន្យ៖ $\sin x \neq 0 \Rightarrow x \neq k\pi$ (ដែលដូចគ្នាទៅនឹងលក្ខខណ្ឌរបស់ $\cot x$ ដែរ)។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="9">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{5}{\cos x}$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q9" value="C" data-correct="true"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q9" value="W1"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q9" value="W2"> $x \neq \pi + 2k\pi$</label>
+        <label class="option-label"><input type="radio" name="q9" value="W3"> $x \neq \frac{\pi}{2} + 2k\pi$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌភាគបែងខុសពីសូន្យ៖ $\cos x \neq 0 \Rightarrow x \neq \frac{\pi}{2} + k\pi$ (ដែលដូចគ្នាទៅនឹងលក្ខខណ្ឌរបស់ $\tan x$ ដែរ)។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="10">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{x}{\sin(2x)}$ មានន័យ। (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q10" value="W1"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q10" value="C" data-correct="true"> $x \neq \frac{k\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q10" value="W2"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q10" value="W3"> $x \neq \frac{\pi}{4} + \frac{k\pi}{2}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌភាគបែងខុសពីសូន្យ៖ $\sin(2x) \neq 0 \Rightarrow 2x \neq k\pi \Rightarrow x \neq \frac{k\pi}{2}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="11">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{1}{\cos(3x)}$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q11" value="W1"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q11" value="W2"> $x \neq \frac{\pi}{6} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q11" value="C" data-correct="true"> $x \neq \frac{\pi}{6} + \frac{k\pi}{3}$</label>
+        <label class="option-label"><input type="radio" name="q11" value="W3"> $x \neq \frac{k\pi}{3}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ $\cos(3x) \neq 0 \Rightarrow 3x \neq \frac{\pi}{2} + k\pi \Rightarrow x \neq \frac{\pi}{6} + \frac{k\pi}{3}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="12">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{1}{\sin x - 1}$ មានន័យ ក្នុងចន្លោះ $[0, 2\pi]$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q12" value="W1"> $x \neq \pi$</label>
+        <label class="option-label"><input type="radio" name="q12" value="W2"> $x \neq \frac{3\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q12" value="W3"> មានន័យជានិច្ច</label>
+        <label class="option-label"><input type="radio" name="q12" value="C" data-correct="true"> $x \neq \frac{\pi}{2}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ $\sin x - 1 \neq 0 \Rightarrow \sin x \neq 1$។ ក្នុងចន្លោះ $[0, 2\pi]$ មុំដែលធ្វើឱ្យ $\sin x = 1$ គឺ $x = \frac{\pi}{2}$ ដូចនេះលក្ខខណ្ឌគឺ $x \neq \frac{\pi}{2}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="13">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{4}{2\cos x - 1}$ មានន័យ ក្នុងចន្លោះ $[0, \pi]$।
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q13" value="W1"> $x \neq \frac{\pi}{6}$</label>
+        <label class="option-label"><input type="radio" name="q13" value="C" data-correct="true"> $x \neq \frac{\pi}{3}$</label>
+        <label class="option-label"><input type="radio" name="q13" value="W2"> $x \neq \frac{\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q13" value="W3"> $x \neq \frac{2\pi}{3}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ $2\cos x - 1 \neq 0 \Rightarrow \cos x \neq \frac{1}{2}$។ ក្នុងចន្លោះ $[0, \pi]$ មុំដែលធ្វើឱ្យ $\cos x = \frac{1}{2}$ គឺ $x = \frac{\pi}{3}$ ដូចនេះលក្ខខណ្ឌគឺ $x \neq \frac{\pi}{3}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="14">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{1}{\tan x}$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q14" value="W1"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q14" value="W2"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q14" value="C" data-correct="true"> $x \neq \frac{k\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q14" value="W3"> មានន័យគ្រប់ $x \in \mathbb{R}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌរួមមានពីរ៖ ១. $\tan x$ ត្រូវមានន័យ ($x \neq \frac{\pi}{2} + k\pi$) និង ២. ភាគបែងខុសពីសូន្យ ($\tan x \neq 0 \Rightarrow x \neq k\pi$)។ ប្រជុំលក្ខខណ្ឌទាំងពីរនេះចូលគ្នាគេបាន $x \neq \frac{k\pi}{2}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="15">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{1}{\cot x}$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q15" value="C" data-correct="true"> $x \neq \frac{k\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q15" value="W1"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q15" value="W2"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q15" value="W3"> $x \neq 2k\pi$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ ១. $\cot x$ មានន័យ ($x \neq k\pi$) និង ២. ភាគបែងមិនសូន្យ ($\cot x \neq 0 \Rightarrow x \neq \frac{\pi}{2} + k\pi$)។ ដូចនេះលក្ខខណ្ឌរួមគឺ $x \neq \frac{k\pi}{2}$ (ដែលស្មើនឹងលក្ខខណ្ឌរបស់ $f(x) = \tan x$ ដែរ)។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="16">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \sqrt{\sin x}$ មានន័យ ក្នុងចន្លោះ $[0, 2\pi]$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q16" value="W1"> $x \in [0, 2\pi]$</label>
+        <label class="option-label"><input type="radio" name="q16" value="W2"> $x \in [\pi, 2\pi]$</label>
+        <label class="option-label"><input type="radio" name="q16" value="C" data-correct="true"> $x \in [0, \pi]$</label>
+        <label class="option-label"><input type="radio" name="q16" value="W3"> $x \neq \frac{\pi}{2}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌកន្សោមក្រោមឫសការេត្រូវតែវិជ្ជមាន ឬសូន្យ៖ $\sin x \ge 0$។ តាមរង្វង់ត្រីកោណមាត្រ អនុគមន៍ស៊ីនូសមានតម្លៃវិជ្ជមាននៅក្នុងកាដ្រង់ទី១ និងទី២ ពោលគឺចន្លោះ $[0, \pi]$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="17">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \sqrt{\cos x}$ មានន័យ ក្នុងចន្លោះ $[0, \pi]$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q17" value="W1"> $x \in [\frac{\pi}{2}, \pi]$</label>
+        <label class="option-label"><input type="radio" name="q17" value="C" data-correct="true"> $x \in [0, \frac{\pi}{2}]$</label>
+        <label class="option-label"><input type="radio" name="q17" value="W2"> $x \in [0, \pi]$</label>
+        <label class="option-label"><input type="radio" name="q17" value="W3"> $x \neq \frac{\pi}{2}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ $\cos x \ge 0$។ ក្នុងចន្លោះ $[0, \pi]$ អនុគមន៍កូស៊ីនូសមានតម្លៃវិជ្ជមានតែនៅក្នុងកាដ្រង់ទី១ ប៉ុណ្ណោះ គឺចន្លោះ $[0, \frac{\pi}{2}]$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="18">
+    <div class="question-text">
+        <span class="q-number"></span> រកដែនកំណត់នៃអនុគមន៍ $f(x) = \sqrt{\sin x - 1}$ ក្នុងចន្លោះ $[0, 2\pi]$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q18" value="W1"> គ្មានដែនកំណត់ទេ</label>
+        <label class="option-label"><input type="radio" name="q18" value="W2"> $x \neq \frac{\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q18" value="C" data-correct="true"> $x = \frac{\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q18" value="W3"> $x \in [0, \pi]$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ $\sin x - 1 \ge 0 \Rightarrow \sin x \ge 1$។ ដោយសារតម្លៃ $\sin x$ មិនអាចធំជាង $1$ បានទេ ($-1 \le \sin x \le 1$) នាំឱ្យករណីនេះកើតឡើងបានតែនៅពេល $\sin x = 1$ ប៉ុណ្ណោះ គឺ $x = \frac{\pi}{2}$។ ដូចនេះដែនកំណត់មានធាតុតែមួយគត់គឺ $D = \{\frac{\pi}{2}\}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="19">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{1}{\sqrt{\cos x}}$ មានន័យ ក្នុងចន្លោះ $\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q19" value="W1"> $x \in [-\frac{\pi}{2}, \frac{\pi}{2}]$</label>
+        <label class="option-label"><input type="radio" name="q19" value="C" data-correct="true"> $x \in (-\frac{\pi}{2}, \frac{\pi}{2})$</label>
+        <label class="option-label"><input type="radio" name="q19" value="W2"> $x \neq 0$</label>
+        <label class="option-label"><input type="radio" name="q19" value="W3"> គ្មានដែនកំណត់ទេ</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ កន្សោមក្រោមឫសនៅភាគបែងត្រូវតែធំជាងសូន្យដាច់ខាត គឺ $\cos x > 0$។ ក្នុងចន្លោះដែលគេឱ្យមក តម្លៃ $\cos x = 0$ ត្រង់ $x = \pm\frac{\pi}{2}$ ដូចនេះត្រូវដកចំណុចចុងសងខាងចេញ នាំឱ្យបានចន្លោះបើក $\left(-\frac{\pi}{2}, \frac{\pi}{2}\right)$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="20">
+    <div class="question-text">
+        <span class="q-number"></span> រកដែនកំណត់នៃអនុគមន៍ $f(x) = \ln(\sin x)$ ក្នុងចន្លោះ $[0, 2\pi]$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q20" value="W1"> $x \in [0, \pi]$</label>
+        <label class="option-label"><input type="radio" name="q20" value="W2"> $x \in (\pi, 2\pi)$</label>
+        <label class="option-label"><input type="radio" name="q20" value="C" data-correct="true"> $x \in (0, \pi)$</label>
+        <label class="option-label"><input type="radio" name="q20" value="W3"> $x \neq \frac{\pi}{2}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌអនុគមន៍លោការីត៖ កន្សោមខាងក្នុងត្រូវធំជាងសូន្យដាច់ខាត គឺ $\sin x > 0$។ ក្នុងចន្លោះ $[0, 2\pi]$ ស៊ីនូសវិជ្ជមានដាច់ខាតក្នុងចន្លោះបើក $(0, \pi)$ (មិនយកចំណុច $0$ និង $\pi$ ព្រោះធ្វើឱ្យ $\sin x = 0$)។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="21">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \tan^2 x + 1$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q21" value="W1"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q21" value="W2"> មានន័យជានិច្ចគ្រប់តម្លៃ $x$</label>
+        <label class="option-label"><input type="radio" name="q21" value="C" data-correct="true"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q21" value="W3"> $x > 0$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        ទោះបីជាវាមានស្វ័យគុណការេក៏ដោយ ក៏លក្ខខណ្ឌរបស់វានៅតែពឹងផ្អែកលើអនុគមន៍គ្រឹះ $\tan x$ ដដែល គឺត្រូវតែឱ្យភាគបែងខុសពីសូន្យ៖ $\cos x \neq 0 \Rightarrow x \neq \frac{\pi}{2} + k\pi$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="22">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{\sin x}{\cos x - 1}$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q22" value="W1"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q22" value="C" data-correct="true"> $x \neq 2k\pi$</label>
+        <label class="option-label"><input type="radio" name="q22" value="W2"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q22" value="W3"> មានន័យជានិច្ច</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌភាគបែងខុសពីសូន្យ៖ $\cos x - 1 \neq 0 \Rightarrow \cos x \neq 1$។ តាមតម្លៃតារាងត្រីកោណមាត្រ គេទាញបានមុំ $x \neq 2k\pi$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="23">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{x}{\sin x + 1}$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q23" value="W1"> $x \neq k\pi$</label>
+        <label class="option-label"><input type="radio" name="q23" value="W2"> $x \neq \frac{\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q23" value="W3"> $x \neq \frac{3\pi}{2} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q23" value="C" data-correct="true"> $x \neq -\frac{\pi}{2} + 2k\pi$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        លក្ខខណ្ឌ៖ $\sin x + 1 \neq 0 \Rightarrow \sin x \neq -1$។ តម្លៃមុំដែលធ្វើឱ្យ $\sin x = -1$ គឺ $x = -\frac{\pi}{2} + 2k\pi$ (ឬ $x = \frac{3\pi}{2} + 2k\pi$) ដូចនេះលក្ខខណ្ឌគឺ $x \neq -\frac{\pi}{2} + 2k\pi$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="24">
+    <div class="question-text">
+        <span class="q-number"></span> រកលក្ខខណ្ឌដើម្បីឱ្យអនុគមន៍ $f(x) = \frac{1}{\sin^2 x - \cos^2 x}$ មានន័យ។ (ចំពោះ $k \in \mathbb{Z}$)
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q24" value="W1"> $x \neq \frac{\k\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q24" value="W2"> $x \neq \frac{\pi}{4} + k\pi$</label>
+        <label class="option-label"><input type="radio" name="q24" value="C" data-correct="true"> $x \neq \frac{\pi}{4} + \frac{k\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q24" value="W3"> $x \neq \frac{\pi}{2} + k\pi$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        តាមរូបមន្តត្រីកោណមាត្រ គេមាន $\cos(2x) = \cos^2 x - \sin^2 x$ ដូចនេះភាគបែងអាចសរសេរជា៖ $-(\cos^2 x - \sin^2 x) = -\cos(2x)$។ លក្ខខណ្ឌភាគបែងខុសពីសូន្យ៖ $-\cos(2x) \neq 0 \Rightarrow 2x \neq \frac{\pi}{2} + k\pi \Rightarrow x \neq \frac{\pi}{4} + \frac{k\pi}{2}$។
+    </div>
+</div>
+
+<div class="question-card" data-qindex="25">
+    <div class="question-text">
+        <span class="q-number"></span> រកដែនកំណត់នៃអនុគមន៍ $f(x) = \frac{1}{1 - \tan x}$ ក្នុងចន្លោះ $[0, \pi]$។
+        <span class="points">(៥ ពិន្ទុ)</span>
+    </div>
+    <div class="options-container">
+        <label class="option-label"><input type="radio" name="q25" value="W1"> $x \neq \frac{\pi}{4}$</label>
+        <label class="option-label"><input type="radio" name="q25" value="W2"> $x \neq \frac{\pi}{2}$</label>
+        <label class="option-label"><input type="radio" name="q25" value="W3"> មានន័យជានិច្ច</label>
+        <label class="option-label"><input type="radio" name="q25" value="C" data-correct="true"> $x \neq \frac{\pi}{4}$ និង $x \neq \frac{\pi}{2}$</label>
+    </div>
+    <div class="solution-box">
+        <div class="solution-title">💡 ដំណោះស្រាយលម្អិត៖</div>
+        អនុគមន៍នេះមានលក្ខខណ្ឌពីររួមគ្នា៖<br>
+        1. អនុគមន៍ $\tan x$ ខ្លួនឯងត្រូវមានន័យ នាំឱ្យ $x \neq \frac{\pi}{2}$។<br>
+        2. ភាគបែងរួមត្រូវខុសពីសូន្យ៖ $1 - \tan x \neq 0 \Rightarrow \tan x \neq 1 \Rightarrow x \neq \frac{\pi}{4}$។<br>
+        ដូចនេះក្នុងចន្លោះ $[0, \pi]$ ដែនកំណត់ត្រូវដកទាំងតម្លៃ $\frac{\pi}{4}$ និង $\frac{\pi}{2}$ ចេញ។
+    </div>
+</div>
+
+                </div>
+
+            <div class="navigation-box" id="navBox">
+                <button type="button" class="nav-btn" id="prevBtn" onclick="changeQuestion(-1)" disabled>⏮ ថយក្រោយ</button>
+                <button type="button" class="nav-btn next-btn" id="nextBtn" onclick="changeQuestion(1)">បន្ទាប់ ⏭</button>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">ផ្ញើចម្លើយ</button>
+        </form>
+    </div>
+
+    <script>
+        let currentQuestionIndex = 0; 
+        let shuffledCards = [];
+        let totalExamPoints = 0;
+        
+        // 🌟 ចាប់ផ្តើមកត់ត្រាម៉ោងភ្លាមៗនៅពេលសិស្សបើកទំព័រវិញ្ញាសា
+        let startTime = new Date(); 
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initQuiz() {
+            const container = document.getElementById('questionsContainer');
+            const cards = Array.from(container.getElementsByClassName('question-card'));
+            
+            totalExamPoints = cards.length * 5;
+            document.getElementById('totalPointsDisplay').innerText = totalExamPoints;
+
+            cards.forEach(card => {
+                const optionsContainer = card.querySelector('.options-container');
+                if (optionsContainer) {
+                    const options = Array.from(optionsContainer.getElementsByClassName('option-label'));
+                    shuffleArray(options);
+                    options.forEach(opt => optionsContainer.appendChild(opt));
+                }
+            });
+
+            shuffleArray(cards);
+            container.innerHTML = '';
+            cards.forEach(card => container.appendChild(card));
+
+            shuffledCards = cards;
+            shuffledCards[0].classList.add('active');
+            
+            updateNavigation();
+        }
+
+        function updateNavigation() {
+            const total = shuffledCards.length;
+            document.getElementById('progressDisplay').innerText = `លំហាត់ទី ${currentQuestionIndex + 1}/${total}`;
+
+            if (currentQuestionIndex === 0) {
+                document.getElementById('prevBtn').disabled = true;
+            } else {
+                document.getElementById('prevBtn').disabled = false;
+            }
+
+            if (currentQuestionIndex === total - 1) {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'block';
+            } else {
+                document.getElementById('nextBtn').style.display = 'block';
+                document.getElementById('submitBtn').style.display = 'none';
+            }
+        }
+
+        function changeQuestion(direction) {
+            shuffledCards[currentQuestionIndex].classList.remove('active');
+            currentQuestionIndex += direction;
+            shuffledCards[currentQuestionIndex].classList.add('active');
+            updateNavigation();
+        }
+
+        function calculateGradeFromPercentage(percentage) {
+            let grade = 'F'; let comment = ''; let cssClass = 'grade-F';
+            if (percentage >= 90) { grade = 'A'; comment = '🎉 ល្អប្រសើរណាស់! លោកគ្រូសរសើរ។ អ្នកពិតជាមានសមត្ថភាពខ្ពស់ និងយល់ច្បាស់ពីមេរៀន។ សូមបន្តការខិតខំនេះ!'; cssClass = 'grade-A'; }
+            else if (percentage >= 80) { grade = 'B'; comment = '✨ ល្អណាស់! លទ្ធផលគួរឱ្យមោទនៈ។ បន្ថែមការប្រុងប្រយ័ត្នបន្តិចទៀត អ្នកនឹងបាននិទ្ទេស A ជាក់ជាមិនខាន។'; cssClass = 'grade-B'; }
+            else if (percentage >= 70) { grade = 'C'; comment = '👍 ល្អបង្គួរ! លទ្ធផលល្អ។ ព្យាយាមរំលឹកមេរៀនបន្ថែមលើចំណុចដែលខ្វះខាតដើម្បីពង្រឹងសមត្ថភាព។'; cssClass = 'grade-C'; }
+            else if (percentage >= 60) { grade = 'D'; comment = '👌 កម្រិតមធ្យម! អ្នកបានឆ្លងផុតការវាយតម្លៃ ប៉ុន្តែត្រូវបង្កើនការធ្វើលំហាត់បន្ថែមទៀត។'; cssClass = 'grade-D'; }
+            else if (percentage >= 50) { grade = 'E'; comment = '⚠️ កម្រិតខ្សោយ! ជិតជាប់ហើយ។ សូមខិតខំប្រឹងប្រែងបន្ថែម និងសួរលោកគ្រូត្រង់ចំណុចមិនច្បាស់។'; cssClass = 'grade-E'; }
+            else { grade = 'F'; comment = '❌ មិនទាន់ជាប់ទេ! កុំបាក់ទឹកចិត្តអី។ ពិនិត្យមើលដំណោះស្រាយលម្អិត ហើយព្យាយាមធ្វើឡើងវិញម្តងទៀតណា!'; cssClass = 'grade-F'; }
+            return { grade, comment, cssClass };
+        }
+
+        function submitExam(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('studentName').value.trim();
+            const sClass = document.getElementById('studentClass').value.trim();
+            
+            if (!name || !sClass) {
+                alert('សូមបំពេញឈ្មោះ និងថ្នាក់សិក្សាជាមុនសិន!');
+                shuffledCards[currentQuestionIndex].classList.remove('active');
+                currentQuestionIndex = 0;
+                shuffledCards[currentQuestionIndex].classList.add('active');
+                updateNavigation();
+                return;
+            }
+
+            // 🌟 គណនារយៈពេលដែលសិស្សបានប្រើប្រាស់
+            let endTime = new Date();
+            let timeDiff = endTime - startTime; // គិតជាមីលីវិនាទី
+            timeDiff /= 1000; // ប្តូរទៅជាវិនាទី
+            
+            let seconds = Math.floor(timeDiff % 60);
+            let minutes = Math.floor(timeDiff / 60);
+            
+            let timeString = "";
+            if (minutes > 0) {
+                timeString += `${minutes} នាទី `;
+            }
+            timeString += `${seconds} វិនាទី`;
+            
+            // បង្ហាញរយៈពេលទៅលើ Result Box
+            document.getElementById('timeSpentDisplay').innerText = timeString;
+
+            let score = 0;
+            shuffledCards.forEach((card) => {
+                const radioInput = card.querySelector('input[type="radio"]');
+                if (radioInput) {
+                    const qName = radioInput.name;
+                    const checkedOption = card.querySelector(`input[name="${qName}"]:checked`);
+                    const solutionBox = card.querySelector('.solution-box');
+                    
+                    card.classList.add('active');
+                    if (solutionBox) solutionBox.style.display = 'block';
+
+                    if (checkedOption && checkedOption.getAttribute('data-correct') === 'true') {
+                        score += 5;
+                        card.classList.add('correct-flash');
+                    } else {
+                        card.classList.add('incorrect-flash');
+                    }
+                }
+            });
+
+            document.getElementById('navBox').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('infoBox').style.display = 'none';
+
+            const finalPercentage = Math.round((score / totalExamPoints) * 100);
+            const evaluation = calculateGradeFromPercentage(finalPercentage);
+
+            document.getElementById('studentResultName').innerText = `បេក្ខជន៖ ${name} | ថ្នាក់/បន្ទប់៖ ${sClass}`;
+            document.getElementById('scoreDisplay').innerText = score;
+            document.getElementById('maxPointsDisplay').innerText = totalExamPoints;
+            document.getElementById('percentDisplay').innerText = finalPercentage;
+            
+            const gradeBadge = document.getElementById('gradeDisplay');
+            gradeBadge.innerText = `និទ្ទេស៖ ${evaluation.grade}`;
+            gradeBadge.className = `grade-badge ${evaluation.cssClass}`;
+            
+            document.getElementById('gradeComment').innerText = evaluation.comment;
+            document.getElementById('resultBox').style.display = 'block';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        window.onload = initQuiz;
+    </script>
+
+<script>
+    // ១. ទាញយកឈ្មោះ File ឱ្យបានច្បាស់លាស់ ទោះបើកពី Local ព្រលែងក៏ដោយ
+    let fullPath = window.location.pathname;
+    let fileName = fullPath.substring(fullPath.lastIndexOf('/') + 1);
+    
+    // បន្ថែមការការពារ៖ បើបើកលើ Windows ពេលខ្លះវាប្រើសញ្ញា \ ជំនួសឱ្យ /
+    if (fileName.includes('\\')) {
+        fileName = fileName.substring(fileName.lastIndexOf('\\') + 1);
+    }
+
+    // ២. កាត់យកតែលេខចេញពីឈ្មោះ File (ដក ".html" ចេញ)
+    let lessonNumber = fileName.replace(".html", "");
+
+    // ៣. ដាក់លក្ខខណ្ឌបង្ហាញ៖ បើទាញបានលេខ ឱ្យបង្ហាញលេខ បើទទេឱ្យបង្ហាញសញ្ញាសួរ ?
+    if (lessonNumber !== "" && !isNaN(lessonNumber)) {
+        document.getElementById("lesson-id").innerText = lessonNumber;
+    } else {
+        document.getElementById("lesson-id").innerText = "1"; // លំនាំដើម
+    }
+</script>
+</body>
+</html>
